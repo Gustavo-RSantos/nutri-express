@@ -2,11 +2,9 @@ package br.com.nutriexpress.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.nutriexpress.demo.service.PratoService;
-import org.springframework.web.bind.annotation.GetMapping;
 import br.dtos.pratos.PratoResponseDTO;
 
 import java.util.List;
@@ -18,19 +16,20 @@ public class PratoController {
     @Autowired
     private PratoService pratoService;
 
-    public PratoController(PratoService pratoService){
-        this.pratoService = pratoService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<PratoResponseDTO>> listarPratos() {
-        List<PratoResponseDTO> pratos = pratoService.listarPratos()
+    public ResponseEntity<List<PratoResponseDTO>> getAllPratos(@RequestParam(value = "categoria", required = false) String categoria) {
+        List<PratoResponseDTO> pratos = pratoService.getAllPratos()
             .stream()
             .map(PratoResponseDTO::new)
             .toList();
 
         return ResponseEntity.ok(pratos);        
     }
-    
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<PratoResponseDTO> getPratoById(@PathVariable Long id){
+//        PratoResponseDTO prato = new PratoResponseDTO(PratoService.getPratoById(id));
+//        return ResponseEntity.ok(prato);
+//    }
 
 }

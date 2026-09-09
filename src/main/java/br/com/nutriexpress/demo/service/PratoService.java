@@ -7,24 +7,23 @@ import org.springframework.stereotype.Service;
 
 import br.com.nutriexpress.demo.model.Prato;
 import br.com.nutriexpress.demo.repository.PratoRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class PratoService {
     
     @Autowired
     private PratoRepository repository;
-    
-    public PratoService(PratoRepository repository){
-        this.repository = repository;
-    }
 
     // Get -> Listando todos os pratos ("/pratos")
-    public List<Prato> listarPratos(){
+    public List<Prato> getAllPratos(){
         return repository.findAll();
     }
 
     // Get -> Prato especifico pelo ID ("/pratos/{id}")
-    public Prato getPratoById(Long id){
+    public Prato getPratoById(@PathVariable Long id){
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Prato com o ID: " + id + "não foi encontrado"));
     }
 
