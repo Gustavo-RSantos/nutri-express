@@ -3,7 +3,8 @@ package br.dtos.pratos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-public record PratosRequestDTO( 
+
+public record PratoRequestDTO( 
     @NotBlank (message = "Campo de nome do prato é obrigátorio") 
     @Size (message = "O tamanho do nome não pode exceder os 100 caracteres")
     String nome,

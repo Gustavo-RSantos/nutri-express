@@ -30,9 +30,6 @@ public class PratoService {
 
     // GET -> Filtra os pratos pela categoria ("/pratos?categoria={categoria}")
 
-    public Prato getPratoByCategoria(Long categoriaId){
-
-    }
 
     // POST -> Cria um novo prato ("/pratos")
 
