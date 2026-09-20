@@ -88,7 +88,7 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarCategoria(Long id) {
+    public ResponseEntity<Void> deletarCategoria(@PathVariable Long id) {
         // chama o serviço para deletar a categoria existente pelo ID fornecido.
         categoriaService.deletarCategoria(id);
         // retorna uma resposta HTTP 204 No Content, indicando que a operação foi bem-sucedida, mas não há conteúdo a ser retornado.
