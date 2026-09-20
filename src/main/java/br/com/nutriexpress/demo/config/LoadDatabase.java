@@ -16,16 +16,16 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(CategoriaRepository repository) {
         return args -> {
-            Categoria categoria1 = new Categoria();
-            categoria1.setNome("Categoria 1");  
-            categoria1.setDescricao("Descrição da categoria 1");
-
-            Categoria categoria2 = new Categoria();
-            categoria2.setNome("Categoria 2");
-            categoria2.setDescricao("Descrição da categoria 2");
-
-            log.info("Preloading " + repository.save(categoria1));
-            log.info("Preloading " + repository.save(categoria2));
+//            Categoria categoria1 = new Categoria();
+//            categoria1.setNome("Categoria 1");
+//            categoria1.setDescricao("Descrição da categoria 1");
+//
+//            Categoria categoria2 = new Categoria();
+//            categoria2.setNome("Categoria 2");
+//            categoria2.setDescricao("Descrição da categoria 2");
+//
+//            log.info("Preloading " + repository.save(categoria1));
+//            log.info("Preloading " + repository.save(categoria2));
         };
     }
 }

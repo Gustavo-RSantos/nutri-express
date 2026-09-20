@@ -1,6 +1,9 @@
 package br.com.nutriexpress.demo.controller;
 
+import br.dtos.pratos.PratoRequestDTO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +20,21 @@ public class PratoController {
     private PratoService pratoService;
 
     @GetMapping
-    public ResponseEntity<List<PratoResponseDTO>> getAllPratos(@RequestParam(value = "categoria", required = false) String categoria) {
-        List<PratoResponseDTO> pratos = pratoService.getAllPratos()
-            .stream()
-            .map(PratoResponseDTO::new)
-            .toList();
-
-        return ResponseEntity.ok(pratos);        
+    public ResponseEntity<List<PratoResponseDTO>> getAllPratos() {
+        List<PratoResponseDTO> pratos = pratoService.getAllPratos();
+        return ResponseEntity.status(HttpStatus.OK).body(pratos);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<PratoResponseDTO> getPratoById(@PathVariable Long id){
-//        PratoResponseDTO prato = new PratoResponseDTO(PratoService.getPratoById(id));
-//        return ResponseEntity.ok(prato);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<PratoResponseDTO> getPratoById(@PathVariable Long id){
+        PratoResponseDTO prato = pratoService.getPratoById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(prato);
+    }
+
+    @PostMapping
+    public ResponseEntity<PratoResponseDTO> createNewPrato(@RequestBody @Valid PratoRequestDTO prato){
+        PratoResponseDTO newPrato = pratoService.createNewPrato(prato);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newPrato);
+    }
 
 }
