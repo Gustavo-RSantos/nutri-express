@@ -21,6 +21,6 @@ public class Categoria {
     private String nome;
     private String descricao;
 
-    @OneToMany(mappedBy = "categoria")
-    private List<Prato> pratos;
+    @OneToMany(mappedBy = "categoria") // Determina a maneira de relacionamento entre as Classes -> 1:N
+    private List<Prato> pratos; // Cria uma Lista dos pratos que possuem essa categoria
 }

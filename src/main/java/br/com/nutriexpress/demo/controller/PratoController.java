@@ -37,4 +37,16 @@ public class PratoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newPrato);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PratoResponseDTO> updatePrato(@PathVariable Long id, @RequestBody PratoRequestDTO updatedDataPrato){
+        PratoResponseDTO updatedPrato = pratoService.updatePrato(id, updatedDataPrato);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedPrato);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePrato(@PathVariable Long id){
+        pratoService.deletePrato(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }

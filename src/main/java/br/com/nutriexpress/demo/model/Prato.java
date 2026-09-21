@@ -22,8 +22,8 @@ public class Prato {
     private String descricao;
     private Double valor;
 
-    @ManyToOne
-    @JoinColumn(name = "categoria_id", referencedColumnName = "id")
+    @ManyToOne // Determina a maneira de relacionamento entre as Classes -> 1
+    @JoinColumn(name = "categoria_id", referencedColumnName = "id") // Cria a coluna de relacionamento entre as tabelas
     private Categoria categoria;
 
     private Integer calorias;

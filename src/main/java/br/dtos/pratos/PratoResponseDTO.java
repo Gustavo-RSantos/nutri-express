@@ -1,12 +1,11 @@
 package br.dtos.pratos;
 
-import br.com.nutriexpress.demo.model.Categoria;
-
 public record PratoResponseDTO(
+        Long id,
         String nome,
         String descricao,
         Double valor,
-        Categoria categoria,
+        String categoria,
         Integer calorias,
         Double quantidade,
         String unidadeMedida
