@@ -20,8 +20,10 @@ public class PratoController {
     private PratoService pratoService;
 
     @GetMapping
-    public ResponseEntity<List<PratoResponseDTO>> getAllPratos() {
-        List<PratoResponseDTO> pratos = pratoService.getAllPratos();
+    public ResponseEntity<List<PratoResponseDTO>> getAllPratos(@RequestParam(required = false) String categoria) {
+        List<PratoResponseDTO> pratos = (categoria != null) ?  // Condicional para caso venha o parametro com o nome da categoria ou não
+                pratoService.getAllPratosByCategoria(categoria) // Chama a função de busca pela categoria no Services
+                : pratoService.getAllPratos(); // Chama a função de busca de todos os pratos
         return ResponseEntity.status(HttpStatus.OK).body(pratos);
     }
 

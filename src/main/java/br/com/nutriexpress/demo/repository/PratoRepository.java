@@ -9,6 +9,9 @@ package br.com.nutriexpress.demo.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import br.com.nutriexpress.demo.model.Prato;
 
+import java.util.List;
+
 public interface PratoRepository extends JpaRepository<Prato, Long> {
 
+    List<Prato> findAllByCategoriaId(Long categoriaId);
 }

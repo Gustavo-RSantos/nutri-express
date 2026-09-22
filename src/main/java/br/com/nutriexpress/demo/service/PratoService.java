@@ -16,7 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PratoService {
-    // Função para evitar repetição na conversão dos dados retornados do repository para os DTOs
+    // Função para evitar repetição da conversão dos dados retornados para o Controller
+    // Convertendo o objeto PRATO para o DTO de resposta
     private PratoResponseDTO convertToDTO(Prato prato){
         return new PratoResponseDTO(
                 prato.getId(),
@@ -33,6 +34,7 @@ public class PratoService {
     @Autowired
     private PratoRepository pratoRepository;
 
+
     @Autowired
     private CategoriaRepository categoriaRepository;
 
@@ -40,7 +42,7 @@ public class PratoService {
     public List<PratoResponseDTO> getAllPratos(){
         return pratoRepository.findAll()
                 .stream()
-                .map(this::convertToDTO) // faço o mapeamento dos dados recebido do banco e devolvo um PratoResponseDTO para cada elemento.
+                .map(this::convertToDTO) // Faz o mapeamento dos dados recebidos e retorna um DTO para cada elemento
                 .toList(); // Retorna uma lista comum com todos os elementos coletados
     }
 
@@ -48,21 +50,39 @@ public class PratoService {
     public PratoResponseDTO getPratoById(Long id){
         //Busco o prato baseado no ID, caso não seja encontrado devolve uma mensagem de erro.
         Prato prato = pratoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prato de id " + id + " não encontrado")); // Caso o Prato não seja encontrado ele retorna 404
+                // Caso o Prato não seja encontrado ele retorna 404
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prato de id " + id + " não encontrado"));
         return convertToDTO(prato);
     }
 
-    // GET -> Filtra os pratos pela categoria ("/pratos?categoria={categoria}")
+    // GET -> Filtra os pratos pela categoria ("/pratos?categoria={"nome"}")
+    @Transactional
+    public List<PratoResponseDTO> getAllPratosByCategoria(String categoria_name){
+        // Valida pelo nome da categoria se ela existe dentro do banco de dados.
+        Categoria categoria = categoriaRepository.findByNome(categoria_name)
+                //Se não encontrar, retorna 404 com mensagem de erro.
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria de nome: " + categoria_name + " não encontrada."));
+
+        // Passa o ID da categoria para o repository dos pratos buscar todos os pratos que contem esse ID,
+        // e retorna lista de PratoResponseDTO para o controller
+        return pratoRepository.findAllByCategoriaId(categoria.getId())
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
 
 
     // POST -> Cria um novo prato ("/pratos")
     @Transactional
     public PratoResponseDTO createNewPrato(PratoRequestDTO pratoDTO){
-        Categoria categoria = categoriaRepository.findByNome(pratoDTO.categoria() // Procura se a categoria existe baseado no nome
-                        .trim()) //Remove espaços em branco da digitação
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria de nome: " + pratoDTO.categoria() + " não encontrada.")); // Caso o Prato não seja encontrado ele retorna 404
-
-        Prato newPrato = new Prato();
+        // Procura se a categoria existe baseado no nome, caso não seja uma categoria anteriormente criada
+        // A criação do prato é bloqueado e o usuario recebe o Status 404
+        Categoria categoria = categoriaRepository.findByNome(pratoDTO.categoria() // Busca categoria pelo nome digitado
+                        //Remove espaços em branco da digitação
+                        .trim())
+                        // Retorno 404 caso a categoria não exista
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria de nome: " + pratoDTO.categoria() + " não encontrada."));
+        Prato newPrato = new Prato(); // Criando o novo objeto prato e atribuindo os valores recebidos
         newPrato.setNome(pratoDTO.nome());
         newPrato.setDescricao(pratoDTO.descricao());
         newPrato.setValor(pratoDTO.valor());
@@ -73,7 +93,7 @@ public class PratoService {
 
         pratoRepository.save(newPrato);
 
-        return convertToDTO(newPrato);
+        return convertToDTO(newPrato); // Retorna o Prato que foi criado para o usuario
     }
 
 
@@ -89,7 +109,8 @@ public class PratoService {
             prato.setCategoria(categoria); // Se passar por totas as etapas ele atualiza dentro do objeto PRATO com a categoria recebida
         }
 
-        prato.setNome(updatedDataPrato.nome() != null ? updatedDataPrato.nome() : prato.getNome()); // Verifica se o dados recebido da API é NULL se for, ele mantem o dado antigo
+        // Verificação para recebimento de dados "NULL" pelo usuario não ter escrito nenhum dado para alteração
+        prato.setNome(updatedDataPrato.nome() != null ? updatedDataPrato.nome() : prato.getNome()); //se o dado for NULL, ele mantem o dado antigo
         prato.setDescricao(updatedDataPrato.descricao() != null ? updatedDataPrato.descricao() : prato.getDescricao());
         prato.setValor(updatedDataPrato.valor() != null ? updatedDataPrato.valor() : prato.getValor());
         prato.setCalorias(updatedDataPrato.calorias() != null ? updatedDataPrato.calorias() : prato.getCalorias());
@@ -104,7 +125,8 @@ public class PratoService {
     // DELETE -> Deleta o prato ("/pratos/{id}")
     @Transactional
     public void deletePrato(Long id){
+        //Busca o prato com o ID recebido, caso o ID não exista ele retorna o STATUS 404
         Prato prato = pratoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prato de id " + id + " não encontrado para ser apagado"));
-        pratoRepository.delete(prato);
+        pratoRepository.delete(prato); // Deleta o prato no banco
     }
 }
