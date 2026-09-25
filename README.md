@@ -7,7 +7,7 @@ Crie um banco chamado no PostgreSQL (via pgAdmin4 ou terminal).
  
 Em `src/main/resources/application.properties`:
 
-Altere o `NOME_DO_SEU_BANCO` para o nome do banco criado em sua maquina e também faça a alteração do `SEU_USUARIO` e `SUA_SENHA` para as credencias configuradas em seu banco.
+Altere o `NOME_DO_SEU_BANCO` para o nome do banco criado em sua maquina e também faça a alteração do `SEU_USUARIO` e `SUA_SENHA` para as credenciais configuradas em seu banco.
  
 ```properties
 spring.application.name=demo
