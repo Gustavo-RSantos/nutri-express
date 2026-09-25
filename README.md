@@ -6,6 +6,8 @@ Crie um banco chamado no PostgreSQL (via pgAdmin4 ou terminal).
 ### Altere as informações dentro do `application.properties` para conseguir roda-lo em seu banco local
  
 Em `src/main/resources/application.properties`:
+
+Altere o `NOME_DO_SEU_BANCO` para o nome do banco criado em sua maquina e também faça a alteração do `SEU_USUARIO` e `SUA_SENHA` para as credencias configuradas em seu banco.
  
 ```properties
 spring.application.name=demo
