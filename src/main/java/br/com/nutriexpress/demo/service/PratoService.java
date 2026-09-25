@@ -7,6 +7,7 @@ import br.com.nutriexpress.demo.model.Categoria;
 import br.com.nutriexpress.demo.repository.CategoriaRepository;
 import br.dtos.pratos.PratoRequestDTO;
 import br.dtos.pratos.PratoResponseDTO;
+import br.dtos.pratos.PratoUpdateRequestDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -107,7 +108,7 @@ public class PratoService {
 
     // PUT -> Atualiza um prato existente ("/pratos/{id}")
     @Transactional
-    public PratoResponseDTO updatePrato(Long id, PratoRequestDTO updatedDataPrato){
+    public PratoResponseDTO updatePrato(Long id, PratoUpdateRequestDTO updatedDataPrato){
 
         Prato prato = pratoRepository.findById(id).orElseThrow(() -> new DadoNaoEncontradoException("Prato de id " + id + " não encontrado para realizar as atualizações"));
         if(updatedDataPrato.categoria() != null) { // Condicional criada para manipulação da categoria, caso ela vier NULL na requisição, ela não é alterada.
