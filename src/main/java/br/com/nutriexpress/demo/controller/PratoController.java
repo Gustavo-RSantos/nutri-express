@@ -33,8 +33,14 @@ public class PratoController {
         return ResponseEntity.status(HttpStatus.OK).body(prato);
     }
 
+    @GetMapping("/calorias")
+    public ResponseEntity<List<PratoResponseDTO>> getAllPratosByMaxCalorias(@RequestParam Double max){
+        List<PratoResponseDTO> pratos = pratoService.getAllPratosByMaxCalorias(max);
+        return ResponseEntity.status(HttpStatus.OK).body(pratos);
+    }
+
     @PostMapping
-    public ResponseEntity<PratoResponseDTO> createNewPrato(@RequestBody @Valid PratoRequestDTO prato){
+    public ResponseEntity<PratoResponseDTO> createNewPrato(@Valid @RequestBody PratoRequestDTO prato){
         PratoResponseDTO newPrato = pratoService.createNewPrato(prato);
         return ResponseEntity.status(HttpStatus.CREATED).body(newPrato);
     }

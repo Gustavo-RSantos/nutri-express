@@ -2,17 +2,16 @@ package br.com.nutriexpress.demo.service;
 
 import java.util.List;
 
+import br.com.nutriexpress.demo.exception.DadoNaoEncontradoException;
 import br.com.nutriexpress.demo.model.Categoria;
 import br.com.nutriexpress.demo.repository.CategoriaRepository;
 import br.dtos.pratos.PratoRequestDTO;
 import br.dtos.pratos.PratoResponseDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import br.com.nutriexpress.demo.model.Prato;
 import br.com.nutriexpress.demo.repository.PratoRepository;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PratoService {
@@ -51,7 +50,8 @@ public class PratoService {
         //Busco o prato baseado no ID, caso não seja encontrado devolve uma mensagem de erro.
         Prato prato = pratoRepository.findById(id)
                 // Caso o Prato não seja encontrado ele retorna 404
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prato de id " + id + " não encontrado"));
+                                    // Tratamento de Excessão customizado para caso não seja encontrado o DADO no banco -> 404
+                .orElseThrow(() -> new DadoNaoEncontradoException("Prato de id " + id + " não encontrado"));
         return convertToDTO(prato);
     }
 
@@ -60,12 +60,20 @@ public class PratoService {
     public List<PratoResponseDTO> getAllPratosByCategoria(String categoria_name){
         // Valida pelo nome da categoria se ela existe dentro do banco de dados.
         Categoria categoria = categoriaRepository.findByNome(categoria_name)
-                //Se não encontrar, retorna 404 com mensagem de erro.
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria de nome: " + categoria_name + " não encontrada."));
+                                    // Tratamento de Excessão customizado para caso não seja encontrado o DADO no banco -> 404
+                .orElseThrow(() -> new DadoNaoEncontradoException( "Categoria de nome: " + categoria_name + " não encontrada."));
 
         // Passa o ID da categoria para o repository dos pratos buscar todos os pratos que contem esse ID,
         // e retorna lista de PratoResponseDTO para o controller
         return pratoRepository.findAllByCategoriaId(categoria.getId())
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    // GET -> Filtra pratos pela quantidade de calorias
+    public List<PratoResponseDTO> getAllPratosByMaxCalorias(Double max){
+        return pratoRepository.findByCaloriasLessThanEqual(max)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -78,10 +86,10 @@ public class PratoService {
         // Procura se a categoria existe baseado no nome, caso não seja uma categoria anteriormente criada
         // A criação do prato é bloqueado e o usuario recebe o Status 404
         Categoria categoria = categoriaRepository.findByNome(pratoDTO.categoria() // Busca categoria pelo nome digitado
-                        //Remove espaços em branco da digitação
+                        //Remove espaços em branco no inicio e no final da digitação
                         .trim())
-                        // Retorno 404 caso a categoria não exista
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria de nome: " + pratoDTO.categoria() + " não encontrada."));
+                        // Tratamento de Excessão customizado para caso não seja encontrado o DADO no banco -> 404
+                        .orElseThrow(() -> new DadoNaoEncontradoException("Categoria de nome: " + pratoDTO.categoria() + " não encontrada."));
         Prato newPrato = new Prato(); // Criando o novo objeto prato e atribuindo os valores recebidos
         newPrato.setNome(pratoDTO.nome());
         newPrato.setDescricao(pratoDTO.descricao());
@@ -101,11 +109,12 @@ public class PratoService {
     @Transactional
     public PratoResponseDTO updatePrato(Long id, PratoRequestDTO updatedDataPrato){
 
-        Prato prato = pratoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prato de id " + id + " não encontrado para realizar as atualizações"));
+        Prato prato = pratoRepository.findById(id).orElseThrow(() -> new DadoNaoEncontradoException("Prato de id " + id + " não encontrado para realizar as atualizações"));
         if(updatedDataPrato.categoria() != null) { // Condicional criada para manipulação da categoria, caso ela vier NULL na requisição, ela não é alterada.
             Categoria categoria = categoriaRepository.findByNome(updatedDataPrato.categoria() // Procura se a categoria digitada existe no banco
                             .trim())
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria de nome: " + updatedDataPrato.categoria() + " não encontrada!."));
+                                                // Tratamento de Excessão customizado para caso não seja encontrado o DADO no banco -> 404
+                            .orElseThrow(() -> new DadoNaoEncontradoException("Categoria de nome: " + updatedDataPrato.categoria() + " não encontrada!."));
             prato.setCategoria(categoria); // Se passar por totas as etapas ele atualiza dentro do objeto PRATO com a categoria recebida
         }
 
@@ -126,7 +135,7 @@ public class PratoService {
     @Transactional
     public void deletePrato(Long id){
         //Busca o prato com o ID recebido, caso o ID não exista ele retorna o STATUS 404
-        Prato prato = pratoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prato de id " + id + " não encontrado para ser apagado"));
+        Prato prato = pratoRepository.findById(id).orElseThrow(() -> new DadoNaoEncontradoException("Prato de id " + id + " não encontrado para ser apagado"));
         pratoRepository.delete(prato); // Deleta o prato no banco
     }
 }

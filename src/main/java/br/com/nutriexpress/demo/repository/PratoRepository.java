@@ -13,5 +13,10 @@ import java.util.List;
 
 public interface PratoRepository extends JpaRepository<Prato, Long> {
 
+    //Query para buscar os pratos baseados na categoria
     List<Prato> findAllByCategoriaId(Long categoriaId);
+
+    //Query para buscar os pratos baseados na quantidade de calorias do prato.
+    // Trazendo os pratos com um numero MENOR OU IGUAL ("<=") ao que foi passado pelo usuario
+    List<Prato> findByCaloriasLessThanEqual(Double calorias);
 }
